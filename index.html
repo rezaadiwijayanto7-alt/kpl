@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KOPLO TEAM SHOP</title>
+    <style>
+        /* --- 1. CSS VARIABLES (Tema) --- */
+        /* Default Tema: DARK MODE */
+        :root { 
+            --bg-main: #280031; 
+            --bg-nav: #350042; 
+            --bg-card: #3c1e50; 
+            --text-main: #ffffff; 
+            --text-secondary: #ccc; 
+            --accent-pink: #ff3370;
+            --box-shadow-color: rgba(0,0,0,0.5);
+        }
+
+        /* LIGHT MODE OVERRIDE */
+        .light-mode {
+            --bg-main: #f0f0f0;
+            --bg-nav: #ffffff;
+            --bg-card: #ffffff;
+            --text-main: #1f1f1f;
+            --text-secondary: #555;
+            --box-shadow-color: rgba(0,0,0,0.15);
+        }
+
+        /* --- 2. GLOBAL RESET & BODY --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            padding-bottom: 50px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* --- 3. NAVBAR & TOGGLE --- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background-color: var(--bg-nav);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px var(--box-shadow-color);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        /* THEME TOGGLE STYLING */
+        .theme-switch-wrapper { display: flex; align-items: center; position: relative; }
+        .theme-switch-label { font-size: 1.5rem; cursor: pointer; margin-left: 10px; }
+        #checkbox { display: none; }
+        #checkbox:checked + .theme-switch-label::after { content: '☀️'; }
+        #checkbox:not(:checked) + .theme-switch-label::after { content: '🌙'; }
+
+
+        /* --- 4. SLIDESHOW / BANNER CSS --- */
+        .slideshow-container {
+            width: 100%;
+            position: relative;
+            margin-bottom: 40px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px var(--box-shadow-color);
+        }
+        
+        .mySlides { display: none; }
+        .mySlides img { width: 100%; height: auto; min-height: 250px; object-fit: cover; display: block; }
+        .prev, .next { cursor: pointer; position: absolute; top: 50%; width: auto; margin-top: -22px; padding: 16px; color: white; font-weight: bold; font-size: 18px; transition: 0.6s ease; border-radius: 0 3px 3px 0; user-select: none; background-color: rgba(0,0,0,0.3); }
+        .next { right: 0; border-radius: 3px 0 0 3px; }
+        .prev:hover, .next:hover { background-color: rgba(0,0,0,0.8); }
+
+        .dots-container { position: absolute; bottom: 15px; width: 100%; text-align: center; }
+        .dot { cursor: pointer; height: 10px; width: 10px; margin: 0 4px; background-color: rgba(255,255,255,0.5); border-radius: 50%; display: inline-block; transition: background-color 0.6s ease; }
+        .active, .dot:hover { background-color: white; }
+        .fade { animation-name: fade; animation-duration: 1.5s; }
+        @keyframes fade {
+            from {opacity: .4} 
+            to {opacity: 1}
+        }
+
+        /* --- 5. GRID GAME LIST --- */
+        .section-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        @media (min-width: 600px) { .grid-container { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 900px) { .grid-container { grid-template-columns: repeat(6, 1fr); } }
+
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 10px;
+            transition: transform 0.2s, background-color 0.3s;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            box-shadow: 0 2px 5px var(--box-shadow-color);
+        }
+
+        .card:hover { transform: translateY(-5px); }
+        .card-image { width: 100%; aspect-ratio: 1 / 1; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+        .card-image img { width: 100%; height: 100%; object-fit: cover; }
+        .card-title { font-size: 0.9rem; color: var(--text-main); padding: 5px; line-height: 1.3; font-weight: 600; }
+
+        /* --- 6. MODAL POP-UP (MENU HARGA) CSS --- */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; top: 0; width: 100%; height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.85);
+        }
+
+        .modal-content {
+            background-color: var(--bg-nav);
+            color: var(--text-main);
+            margin: 5% auto; 
+            padding: 30px;
+            border-radius: 12px;
+            width: 95%; max-width: 550px;
+            box-shadow: 0 5px 25px var(--box-shadow-color);
+            position: relative;
+            animation-name: animatetop;
+            animation-duration: 0.4s;
+        }
+
+        @keyframes animatetop { from {top: -300px; opacity: 0} to {top: 0; opacity: 1} }
+
+        .close-btn { color: var(--text-secondary); float: right; font-size: 28px; font-weight: bold; cursor: pointer; line-height: 1; }
+        .close-btn:hover, .close-btn:focus { color: var(--text-main); text-decoration: none; }
+
+        /* VIDEO/IMAGE CONTAINER (untuk rasio 16:9) */
+        .video-container {
+            margin-bottom: 10px; /* Diperkecil karena ada toggle di bawah */
+            background-color: black;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            padding-bottom: 56.25%; /* Rasio 16:9 */
+            height: 0;
+            box-shadow: 0 0 10px var(--box-shadow-color);
+        }
+
+        .video-container img, .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px; 
+            border: none; /* Untuk iframe */
+        }
+        /* END MEDIA CONTAINER */
+
+        /* CSS BARU UNTUK TOGGLE VIDEO/GAMBAR */
+        .media-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        .media-btn {
+            padding: 8px 15px;
+            border: 2px solid var(--bg-card);
+            border-radius: 6px;
+            cursor: pointer;
+            background-color: var(--bg-card);
+            color: var(--text-secondary);
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .media-btn.active {
+            border-color: var(--accent-pink);
+            background-color: var(--accent-pink);
+            color: white;
+            box-shadow: 0 0 8px rgba(255, 51, 112, 0.5);
+        }
+        .media-btn:hover:not(.active) {
+            border-color: var(--text-secondary);
+        }
+        /* END CSS BARU */
+
+
+        .modal-section { margin-bottom: 20px; padding: 15px; background-color: var(--bg-card); border-radius: 8px; }
+        .modal-section h4 { margin-bottom: 10px; color: var(--accent-pink); }
+        .input-field { width: 100%; padding: 10px; border: 1px solid var(--text-secondary); border-radius: 5px; background-color: var(--bg-main); color: var(--text-main); outline: none; transition: border-color 0.3s; }
+        .input-field:focus { border-color: var(--accent-pink); }
+
+        .price-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+
+        .price-option {
+            border: 2px solid var(--bg-card); padding: 10px; border-radius: 8px; text-align: center; cursor: pointer;
+            transition: border-color 0.3s, background-color 0.3s; background-color: var(--bg-main); font-size: 0.9rem;
+        }
+        .price-option:hover { border-color: var(--accent-pink); }
+        .price-option.selected {
+            border-color: var(--accent-pink);
+            background-color: #4d2b7d;
+            box-shadow: 0 0 8px rgba(255, 51, 112, 0.5);
+        }
+
+        .buy-button {
+            width: 100%; padding: 15px; background-color: var(--accent-pink); color: white; border: none;
+            border-radius: 8px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        .buy-button:hover { background-color: #e02c65; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-left">
+            <a href="#" class="logo">KOPLO TEAM</a> 
+        </div>
+        <div class="nav-right">
+            <div class="theme-switch-wrapper">
+                <input type="checkbox" id="checkbox" />
+                <label for="checkbox" class="theme-switch-label"></label>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+      <div class="slideshow-container">
+            
+    <div class="mySlides fade">
+        <img src="banner1.jpg" alt="Banner 1">
+    </div>
+
+    <div class="mySlides fade">
+        <img src="banner2.jpg" alt="Banner 2">
+    </div>
+
+    <div class="mySlides fade">
+        <img src="banner3.jpg" alt="Banner 3">
+    </div>
+
+    <a class="prev" onclick="plusSlides(-1)">❮</a>
+    <a class="next" onclick="plusSlides(1)">❯</a>
+
+    <div class="dots-container">
+        <span class="dot" onclick="currentSlide(1)"></span> 
+        <span class="dot" onclick="currentSlide(2)"></span> 
+        <span class="dot" onclick="currentSlide(3)"></span> 
+    </div>
+
+</div>
+
+        <h2 class="section-title">NEW OBB 51</h2>
+        
+        <div class="grid-container">
+           <a href="javascript:void(0)" class="card" 
+    data-title="INTERNAL"
+    data-video-id="fS-D4-Iq4vA" 
+    data-image-preview="image.jpg" 
+    data-prices='[
+        {"value":"1HARI", "price":"Rp 10.000"}, 
+        {"value":"7HARI", "price":"Rp 45.000"}, 
+        {"value":"1BULAN", "price":"Rp 100.000"}
+    ]'> 
+
+    <div class="card-image">
+        <img src="image.jpg" alt="Game 1">
+    </div>
+
+    <div class="card-title">PANEL INTERNAL</div>
+</a>
+
+
+           <a href="javascript:void(0)" class="card" 
+    data-title="exsternal"
+    data-video-id="https://youtu.be/o169rbknZyQ?si=1N4LxT5JIyrdBH7b" 
+    data-image-preview="external.png"
+    data-prices='[
+        {"value":"1 HARI", "price":"Rp 10.000"}, 
+        {"value":"1 BULAN", "price":"Rp 100.000"}
+    ]'>
+    
+    <div class="card-image">
+        <img src="external.png" alt="Game 2">
+    </div>
+
+    <div class="card-title">PANEL EXSTERNAL</div>
+</a>
+
+        <a href="javascript:void(0)" class="card"
+    data-title="BEYPAS UID N32"
+    data-video-id=""
+    data-image-preview="BEYPAS UD N32.png"
+    data-prices='[
+        {"value":"1 HARI", "price":"Rp 30.000"},
+        {"value":"7 HARI", "price":"Rp 50.000"},
+        {"value":"1 BULAN", "price":"Rp 150.000"}
+    ]'>
+
+    <div class="card-image">
+        <img src="BEYPAS UD N32.png" alt="BEYPAS UID N32">
+    </div>
+
+    <div class="card-title">BEYPAS UD N32</div>
+</a>
+          <a href="javascript:void(0)" class="card"
+    data-title="BEYPAS P64"
+    data-video-id="eB4d6L96W7U"
+    data-image-preview="BEYPAS P64.jpg"
+    data-prices='[
+        {"value":"3 HARI ", "price":"Rp 35.000"},
+        {"value":"1 BULAN", "price":"Rp 150.000"}
+    ]'>
+
+    <div class="card-image">
+        <img src="BEYPAS P64.jpg" alt="BEYPAS P64">
+    </div>
+
+    <div class="card-title">BEYPAS P64</div>
+</a>
+
+          <!-- BOOKBOT -->
+<a href="javascript:void(0)" class="card"
+    data-title="BEYPAS XG"
+    data-video-id=""
+    data-image-preview="BEYPAS XG.png"
+    data-prices='[
+        {"value":"1 HARI", "price":"Rp 20.000"},
+        {"value":"7 HARI", "price":"Rp 50.000"},
+        {"value":"14 HARI", "price":"Rp 100.000"},
+        {"value":"1 BULAN", "price":"Rp 150.000"}
+    ]'>
+
+    <div class="card-image">
+        <img src="BEYPAS XG.png" alt="BEYPAS XG">
+    </div>
+
+    <div class="card-title">BEYPAS XG</div>
+</a>
+
+         
+
+
+    <div id="gameModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h3 id="modal-title" class="modal-title"></h3>
+            <hr style="border-color: var(--text-secondary); margin: 10px 0;">
+            
+            <div id="modalVideoContainer" class="video-container">
+            </div>
+
+            <div id="mediaToggle" class="media-toggle" style="display: none;">
+                <button id="imageBtn" class="media-btn active">Gambar Preview</button>
+                <button id="videoBtn" class="media-btn">Tonton Video</button>
+            </div>
+            <div class="modal-body">
+                
+                <div class="modal-section">
+                    <h4>1. Masukkan ID Pengguna</h4>
+                    <input type="text" id="userID" placeholder="Masukkan ID Pengguna (User ID)" class="input-field">
+                </div>
+
+                <div class="modal-section">
+                    <h4>2. Pilih Nominal Top Up</h4>
+                    <div id="price-options" class="price-grid">
+                    </div>
+                </div>
+
+                <div class="modal-section">
+                    <h4>3. Pembayaran</h4>
+                    <select id="paymentMethod" class="input-field">
+                        <option value="">Pilih Metode Pembayaran</option>
+                        <option value="Transfer Bank">Transfer Bank</option>
+                        <option value="E-Wallet (Dana/GoPay)" selected>E-Wallet (Dana/GoPay)</option>
+                        <option value="Pulsa (Telkomsel, Indosat)">Pulsa (Telkomsel, Indosat)</option>
+                    </select>
+                </div>
+
+                <button id="buyNowButton" class="buy-button">Beli Sekarang</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // --- 1. LOGIKA SLIDESHOW ---
+        let slideIndex = 1;
+        showSlides(slideIndex);
+
+        function plusSlides(n) { showSlides(slideIndex += n); }
+        function currentSlide(n) { showSlides(slideIndex = n); }
+
+        function showSlides(n) {
+            let slides = document.getElementsByClassName("mySlides");
+            let dots = document.getElementsByClassName("dot");
+            
+            if (n > slides.length) {slideIndex = 1} 
+            if (n < 1) {slideIndex = slides.length}
+            
+            for (let i = 0; i < slides.length; i++) { slides[i].style.display = "none"; }
+            for (let i = 0; i < dots.length; i++) { dots[i].className = dots[i].className.replace(" active", ""); }
+            
+            slides[slideIndex-1].style.display = "block";  
+            dots[slideIndex-1].className += " active";
+        }
+
+        setInterval(function() { plusSlides(1); }, 5000); 
+
+        // --- 2. LOGIKA DARK/LIGHT MODE ---
+        const toggle = document.getElementById('checkbox');
+        const body = document.body;
+        const savedTheme = localStorage.getItem('theme');
+
+        // Mengatur tema berdasarkan preferensi yang tersimpan atau preferensi sistem
+        if (savedTheme === 'light-mode') {
+            body.classList.add('light-mode');
+            toggle.checked = true;
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches && savedTheme === null) {
+            body.classList.add('light-mode');
+            toggle.checked = true;
+        }
+        
+        // Listener saat tombol toggle diklik
+        toggle.addEventListener('change', function() {
+            if (toggle.checked) {
+                body.classList.add('light-mode');
+                localStorage.setItem('theme', 'light-mode');
+            } else {
+                body.classList.remove('light-mode');
+                localStorage.setItem('theme', 'dark-mode');
+            }
+        });
+        
+        // --- 3. LOGIKA MODAL POP-UP (Menu & Harga) & INTEGRASI WA ---
+
+        const modal = document.getElementById("gameModal");
+        const closeBtn = document.getElementsByClassName("close-btn")[0];
+        const cards = document.querySelectorAll(".card");
+        const modalTitle = document.getElementById("modal-title");
+        const priceOptionsContainer = document.getElementById("price-options");
+        const modalVideoContainer = document.getElementById("modalVideoContainer");
+        const buyNowButton = document.getElementById("buyNowButton");
+        const mediaToggle = document.getElementById('mediaToggle');
+        const imageBtn = document.getElementById('imageBtn');
+        const videoBtn = document.getElementById('videoBtn');
+        
+        // Variabel untuk menyimpan data saat kartu diklik
+        let currentImageURL = null;
+        let currentVideoID = null;
+
+        // Konstanta untuk Link WA (Ganti dengan nomor dan pesan Anda)
+        const WA_NUMBER = '628311802927'; 
+        let selectedNominal = null;
+        let selectedPrice = null;
+
+        // Fungsi BARU: Mengganti media (Gambar/Video) di Modal
+        function updateMedia(showVideo) {
+            if (showVideo && currentVideoID) {
+                // Tampilkan Video YouTube
+                const videoHTML = `<iframe src="https://www.youtube.com/embed/${currentVideoID}?autoplay=1&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                modalVideoContainer.innerHTML = videoHTML;
+                videoBtn.classList.add('active');
+                imageBtn.classList.remove('active');
+            } else {
+                // Tampilkan Gambar Preview
+                let imageUrl = currentImageURL;
+                if (!imageUrl || imageUrl.startsWith('https://photos.app.goo.gl')) {
+                    // Jika URL-nya tidak valid (Google Photos Share Link), gunakan placeholder
+                    const title = document.getElementById('userID').getAttribute('data-game-title');
+                    const cleanTitle = title ? title.replace(/\s/g, '+') : 'PREVIEW';
+                    imageUrl = `https://placehold.co/550x300/512da8/white?text=${cleanTitle}+PREVIEW`;
+                }
+
+                const imageHTML = `<img src="${imageUrl}" alt="Game Banner">`;
+                modalVideoContainer.innerHTML = imageHTML;
+                imageBtn.classList.add('active');
+                videoBtn.classList.remove('active');
+            }
+        }
+
+        // Fungsi untuk MEMBUKA Modal saat kartu diklik
+        cards.forEach(card => {
+            card.addEventListener('click', function(e) {
+                e.preventDefault(); 
+                
+                const title = this.getAttribute('data-title');
+                const pricesString = this.getAttribute('data-prices');
+                currentVideoID = this.getAttribute('data-video-id'); // Ambil ID Video
+                currentImageURL = this.getAttribute('data-image-preview'); // Ambil URL Gambar
+                
+                // Mengoreksi data-prices yang berpotensi memiliki trailing comma (koma di akhir)
+                const prices = JSON.parse(pricesString.replace(/,(\s*])/, '$1')); 
+                
+                // Tentukan apakah tombol toggle perlu ditampilkan
+                if (currentVideoID) {
+                    mediaToggle.style.display = 'flex'; // Tampilkan tombol toggle
+                } else {
+                    mediaToggle.style.display = 'none'; // Sembunyikan jika tidak ada video
+                }
+                
+                // Tampilkan media default: Gambar Preview
+                updateMedia(false); 
+
+                // --- 3B. ISI JUDUL DAN HARGA ---
+                modalTitle.textContent = "Top Up " + title;
+                document.getElementById('userID').setAttribute('data-game-title', title); // Simpan Judul Game
+                
+                let priceHTML = '';
+                prices.forEach(item => {
+                    // Membersihkan string harga (menghilangkan 'Rp ', titik, dan spasi) untuk mendapatkan angka murni
+                    const rawPrice = item.price.replace('Rp ', '').replace(/\./g, '').trim(); 
+                    
+                    // Filter entri yang kosong
+                    if (item.value && item.price) {
+                        priceHTML += `
+                            <div class="price-option" 
+                                data-value="${item.value}" 
+                                data-price="${rawPrice}">
+                                <p>${item.value}</p>
+                                <p style="font-weight: bold; color: var(--accent-pink);">${item.price}</p>
+                            </div>
+                        `;
+                    }
+                });
+                priceOptionsContainer.innerHTML = priceHTML;
+
+                // Tampilkan Modal
+                modal.style.display = "block";
+                selectedNominal = null;
+                selectedPrice = null;
+
+                // --- 3C. Event Listener untuk memilih harga ---
+                document.querySelectorAll('.price-option').forEach(option => {
+                    option.addEventListener('click', function() {
+                        document.querySelectorAll('.price-option').forEach(opt => opt.classList.remove('selected'));
+                        this.classList.add('selected');
+                        selectedNominal = this.getAttribute('data-value');
+                        selectedPrice = this.getAttribute('data-price');
+                    });
+                });
+            });
+        });
+
+        // Event Listener untuk tombol toggle (Gambar/Video)
+        imageBtn.addEventListener('click', () => updateMedia(false));
+        videoBtn.addEventListener('click', () => updateMedia(true));
+
+        // --- 4. LOGIKA TOMBOL "BELI SEKARANG" (Integrasi WA) ---
+        buyNowButton.addEventListener('click', function() {
+            const userId = document.getElementById('userID').value.trim();
+            const gameTitle = document.getElementById('userID').getAttribute('data-game-title');
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            
+            // Validasi Sederhana
+            if (!userId) {
+                alert('Mohon masukkan ID Pengguna Anda.');
+                return;
+            }
+            if (!selectedNominal || !selectedPrice) {
+                alert('Mohon pilih Nominal Top Up terlebih dahulu.');
+                return;
+            }
+            if (!paymentMethod || paymentMethod === "") {
+                alert('Mohon pilih Metode Pembayaran.');
+                return;
+            }
+
+            // Format nominal ke Rupiah (untuk pesan WA)
+            const priceFormatted = new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(selectedPrice);
+
+            // Buat pesan untuk WhatsApp
+            const message = `Halo, saya ingin Top Up ${gameTitle}.%0A%0A* Detail Pesanan:*%0A- ID Pengguna: ${userId}%0A- Nominal: ${selectedNominal} (${priceFormatted})%0A- Pembayaran: ${paymentMethod}%0A%0AMohon kirimkan info pembayaran E-Wallet/Transfer Anda. Terima kasih.`;
+            
+            // Buat link WhatsApp dan buka di tab baru
+            const waLink = `https://wa.me/${WA_NUMBER}?text=${message}`;
+            window.open(waLink, '_blank');
+        });
+
+
+        // Fungsi untuk MENUTUP Modal
+        closeBtn.onclick = function() {
+            modal.style.display = "none";
+            modalVideoContainer.innerHTML = ''; // Membersihkan media saat modal ditutup
+        }
+
+        // Tutup Modal jika klik di luar kotak modal
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+                modalVideoContainer.innerHTML = ''; // Membersihkan media saat modal ditutup
+            }
+        }
+    </script>
+</body>
+</html>
